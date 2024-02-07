@@ -5,6 +5,7 @@ import 'package:weather/view/home_screen.dart';
 import 'package:weather/view/splash_screen.dart';
 
 import 'controller/connectivity_provider.dart';
+import 'controller/search_provider.dart';
 import 'controller/theme_provider.dart';
 late SharedPreferences prefs;
 void main()async {
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ConnectivityProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => SearchProvider(),
         ),
       ],
       builder: (context, child) {
