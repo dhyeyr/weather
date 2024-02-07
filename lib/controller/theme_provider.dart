@@ -25,4 +25,8 @@ class ThemeProvider extends ChangeNotifier {
     currentTheme = prefs.getBool('theme') ?? false;
     notifyListeners();
   }
+
+  void refresh(){
+    notifyListeners();
+  }
 }

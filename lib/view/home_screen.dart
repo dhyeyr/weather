@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +27,7 @@ class _Home_screenState extends State<Home_screen> {
   Widget build(BuildContext context) {
     double _height = MediaQuery.of(context).size.height;
     double _width = MediaQuery.of(context).size.width;
+
     String loc = "Rajkot";
     return Scaffold(
       body: FutureBuilder(
@@ -44,6 +47,10 @@ class _Home_screenState extends State<Home_screen> {
             // Format the date in the desired output format with month name
             DateFormat outputFormat = DateFormat("MMMM dd, yyyy", 'en_US');
             String formattedDate = outputFormat.format(dateTime);
+
+            DateTime now = DateTime.now();
+            double hour = now.hour.toDouble();
+
             return Stack(
               children: [
                 Container(
@@ -59,8 +66,8 @@ class _Home_screenState extends State<Home_screen> {
                   ),
                 ),
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     Padding(
                       padding: const EdgeInsets.only(
                         top: 60,
@@ -80,7 +87,7 @@ class _Home_screenState extends State<Home_screen> {
                                       },
                                     )),
                             Text(
-                              "$loc",
+                              "${data.location!.name}",
                               style: TextStyle(fontSize: 23),
                             ),
                             IconButton(
@@ -128,7 +135,9 @@ class _Home_screenState extends State<Home_screen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 90,),
+                    SizedBox(
+                      height: 90,
+                    ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       physics: const BouncingScrollPhysics(),
@@ -138,7 +147,8 @@ class _Home_screenState extends State<Home_screen> {
                           data.forecast!.forecastday![0].hour!.length,
                           (index) {
                             return Padding(
-                              padding: const EdgeInsets.only(right: 10,left: 15),
+                              padding:
+                                  const EdgeInsets.only(right: 10, left: 15),
                               child: Column(
                                 children: [
                                   (data.forecast!.forecastday![0]
@@ -166,13 +176,11 @@ class _Home_screenState extends State<Home_screen> {
                                             fontSize: _height * 0.022,
                                           ),
                                         ),
-
                                   Image.network(
                                     "http:${data.forecast!.forecastday![0].hour![index].condition!.icon}",
                                     height: _height * 0.05,
                                     width: _height * 0.05,
                                   ),
-
                                   Text(
                                     "${data.forecast!.forecastday![0].hour![index].tempC}°",
                                     style: TextStyle(
@@ -187,16 +195,141 @@ class _Home_screenState extends State<Home_screen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10,),
-                    Divider(
-                      endIndent:15,
-                      indent:15,
+                    SizedBox(
+                      height: 10,
                     ),
+                    Divider(
+                      endIndent: 15,
+                      indent: 15,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 15),
+                      child: Text(
+                        "Details",
+                        style: TextStyle(
+                          fontSize: _height * 0.0209,
+                          fontWeight: FontWeight.w500,
+                          // color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(
+                              Icons.sunny_snowing,
+                              color: Colors.yellow,
+                            ),
+                            Text(
+                                "${data.forecast!.forecastday![0].astro!.sunrise}")
+                          ],
+                        ),
+                        Container(
+                          width: 230,
+                          child: Slider(
+                            activeColor:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Colors.yellow
+                                    : Colors.grey[400],
+                            min: 0.0,
+                            max: 100.0,
+                            value: hour,
+                            divisions: 24,
+                            label: '${hour.round()}',
+                            onChanged: (value) {
+                              Provider.of<ThemeProvider>(context, listen: false)
+                                  .refresh();
+                              hour = value;
+                            },
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            Icon(Icons.sunny),
+                            Text(
+                                "${data.forecast!.forecastday![0].astro!.sunset}")
+                          ],
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(left: 10,right: 10),
+                      height: 80,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color: Colors.grey),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "${data.current!.feelslikeC}°c",
+                              ),
+                              Text("Feels Like")
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "${data.current!.humidity}°c",
+                              ),
+                              Text("Humidity")
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "${data.current!.cloud}",
+                              ),
+                              Text("WNW,force")
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                "${data.current!.pressureMb}",
+                              ),
+                              Text("Pressure")
+                            ],
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 325, left: 110),
                   child: Text(formattedDate),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 270, left: 230),
+                  child: Text(
+                    "c",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                  ),
                 )
               ],
             );
