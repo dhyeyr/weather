@@ -15,12 +15,11 @@ class ThemeProvider extends ChangeNotifier {
     return null;
   }
 
-  void changeTheme(var theme) {
-    prefs.setBool('theme', theme);
-    currentTheme = theme;
+  void setTheme() {
+    currentTheme = !currentTheme;
+    prefs.setBool('theme', currentTheme);
     notifyListeners();
   }
-
   void getTheme() {
     currentTheme = prefs.getBool('theme') ?? false;
     notifyListeners();

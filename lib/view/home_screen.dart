@@ -78,137 +78,86 @@ class _Home_screenState extends State<Home_screen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                          top: 60,
-                        ),
-                        child: Container(
-                          height: 60,
-                          width: double.infinity,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Consumer<ThemeProvider>(
-                                  builder: (context, themeProvider, child) =>
-                                      Switch(
-                                        value: themeProvider.currentTheme,
-                                        onChanged: (bool value) {
-                                          themeProvider.changeTheme(value);
-                                        },
-                                      )),
-                              Text(
-                                "${data.location!.name}",
-                                style: TextStyle(fontSize: 23),
-                              ),
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.menu_outlined,
-                                    size: 25,
-                                  ))
-                            ],
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(8),
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextFormField(
-                          onChanged: (value) async{
-                            String baseUrl =
-                                "https://api.weatherapi.com/v1/forecast.json?key=e09f03988e1048d2966132426232205&q=";
-                            String endUrl = "$value&aqi=no";
-                            String api = baseUrl + endUrl;
-                            http.Response res = await http.get(Uri.parse(api));
-                            if (res.statusCode == 200){
-                              sp.loc = value;
-                              prefs.setString("City", value);
-                            }
-                            else{
-                              print("NO DATA FOUND");
-                            }
-                          },
-                          onSaved: (value)async{
-
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Enter City',
-                            border: OutlineInputBorder(),
-                            icon: Icon(Icons.location_city),
-                          ),
-                          cursorColor: Colors.white,
-                          keyboardType: TextInputType.text,
-                          textCapitalization: TextCapitalization.words,
-                        ),
-                      ),
-                      // Container(
-                      //    height: 50,
-                      //   margin: EdgeInsets.only(left: 10, right: 10),
-                      //   child: TextFormField(
-                      //     style: TextStyle(fontSize: 16),
-                      //     decoration: InputDecoration(
-                      //         hintText: "Search The City",
-                      //         border: OutlineInputBorder()),
-                      //   ),
-                      // ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 70, left: 110),
-                        child:Row(
+                        padding: const EdgeInsets.only(top: 200, left: 100),
+                        child: Stack(
+                          children: [
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               textBaseline: TextBaseline.alphabetic,
                               crossAxisAlignment: CrossAxisAlignment.baseline,
                               children: [
                                 Text(
-                                  "${data.current!.tempC}°",
+                                  "${data.current!.tempC}°C",
                                   style: TextStyle(
                                     fontSize: _height * 0.06,
                                     fontWeight: FontWeight.w500,
                                     // color: Colors.white,
                                   ),
                                 ),
-                                Text(
-                                  "${data.current!.condition!.text}",
-                                  style: TextStyle(
-                                    fontSize: _height * 0.025,
-                                    fontWeight: FontWeight.w500,
-                                    // color: Colors.white,
-                                  ),
+                                Column(
+                                  children: [
+                                    Image.network(
+                                        "http:${data.current!.condition!.icon}"),
+                                    Text(
+                                      "${data.current!.condition!.text}",
+                                      style: TextStyle(
+                                        fontSize: _height * 0.025,
+                                        fontWeight: FontWeight.w500,
+                                        // color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-
+                          ],
+                        ),
                       ),
                       SizedBox(
-                        height: 80,
+                        height: 100,
                       ),
+                      Text(
+                          "  ${data.location!.name} , ${data.location!.region} , ${data.location!.country}"),
                       Divider(
                         endIndent: 10,
                         indent: 10,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black54
+                            : Colors.white,
                       ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         physics: const BouncingScrollPhysics(),
                         child: Container(
-                          margin: EdgeInsets.only(left: 10,right: 10),
+                          margin: EdgeInsets.only(left: 10, right: 10),
                           height: _height * 0.13,
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                5,
-                              ),
-                              color: Colors.grey),
+                            borderRadius: BorderRadius.circular(
+                              5,
+                            ),
+                            color:
+                                Theme.of(context).brightness == Brightness.light
+                                    ? Color(0xFF3384C2)
+                                    : Color(0xFF48799D),
+                          ),
                           child: Row(
                             children: List.generate(
                               // data.forecast!.forecastday!.hour.length(),
                               data.forecast!.forecastday![0].hour!.length,
                               (index) {
                                 return Padding(
-                                  padding:
-                                      const EdgeInsets.only(right: 10, left: 15,top: 10),
+                                  padding: const EdgeInsets.only(
+                                      right: 10, left: 15, top: 10),
                                   child: Column(
                                     children: [
-                                      (data.forecast!.forecastday![0]
-                                                  .hour![DateTime.now().hour].time!
-                                                  .split(
-                                                      "${DateTime.now().day}")[1] ==
+                                      (data
+                                                      .forecast!
+                                                      .forecastday![0]
+                                                      .hour![DateTime.now().hour]
+                                                      .time!
+                                                      .split(
+                                                          "${DateTime.now().day}")[
+                                                  1] ==
                                               data.forecast!.forecastday![0]
                                                   .hour![index].time!
                                                   .split(
@@ -216,9 +165,8 @@ class _Home_screenState extends State<Home_screen> {
                                           ? Text(
                                               "Now",
                                               style: TextStyle(
-                                                // color: Colors.white,
-                                                fontSize: _height * 0.020
-                                              ),
+                                                  // color: Colors.white,
+                                                  fontSize: _height * 0.020),
                                             )
                                           : Text(
                                               data.forecast!.forecastday![0]
@@ -253,28 +201,40 @@ class _Home_screenState extends State<Home_screen> {
                       Divider(
                         endIndent: 10,
                         indent: 10,
+                        color: Theme.of(context).brightness == Brightness.light
+                            ? Colors.black54
+                            : Colors.white,
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Container(
-                          margin: EdgeInsets.only(right: 10),
-                          height: _height * 0.05,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                5,
+                      Container(
+                        margin: EdgeInsets.only(left: 10, right: 10),
+                        height: _height * 0.05,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF3384C2)
+                                  : Color(0xFF48799D),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 5),
+                          child: Row(
+                            children: [
+                              Text(
+                                "Details :",
+                                style: TextStyle(
+                                  fontSize: _height * 0.0209,
+                                  fontWeight: FontWeight.w500,
+                                  // color: Colors.white,
+                                ),
                               ),
-                              color: Colors.grey),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 7, left: 5),
-                            child: Text(
-                              "Details :",
-                              style: TextStyle(
-                                fontSize: _height * 0.0209,
-                                fontWeight: FontWeight.w500,
-                                // color: Colors.white,
+                              SizedBox(
+                                width: 150,
                               ),
-                            ),
+                              Text(formattedDate),
+                            ],
                           ),
                         ),
                       ),
@@ -285,10 +245,14 @@ class _Home_screenState extends State<Home_screen> {
                         margin: EdgeInsets.only(left: 10, right: 10),
                         height: 80,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ),
-                            color: Colors.grey),
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF3384C2)
+                                  : Color(0xFF48799D),
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -351,10 +315,14 @@ class _Home_screenState extends State<Home_screen> {
                         margin: EdgeInsets.only(left: 10, right: 10),
                         height: 80,
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              5,
-                            ),
-                            color: Colors.grey),
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF3384C2)
+                                  : Color(0xFF48799D),
+                        ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -379,7 +347,7 @@ class _Home_screenState extends State<Home_screen> {
                                   height: 20,
                                 ),
                                 Text(
-                                  "${data.current!.humidity}°c",
+                                  "${data.current!.humidity}%",
                                 ),
                                 Text("Humidity")
                               ],
@@ -416,20 +384,251 @@ class _Home_screenState extends State<Home_screen> {
                             )
                           ],
                         ),
-                      )
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 10, right: 10),
+                        height: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF3384C2)
+                                  : Color(0xFF48799D),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.location!.lat}",
+                                ),
+                                Text("Lat")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.current!.windMph} Mph",
+                                ),
+                                Text("Wind")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.current!.windDir}",
+                                ),
+                                Text("Wind Dir")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.location!.lon}",
+                                ),
+                                Text("Lon")
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 10, right: 10),
+                        height: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            5,
+                          ),
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Color(0xFF3384C2)
+                                  : Color(0xFF48799D),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.forecast!.forecastday![0].astro!.moonIllumination}",
+                                ),
+                                Icon(Icons.shield_moon_sharp)
+                                // Text("Lat")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.forecast!.forecastday![0].day!.maxwindKph} Kph",
+                                ),
+                                Text("Max Wind")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.forecast!.forecastday![0].day!.uv}",
+                                ),
+                                Text("UV")
+                              ],
+                            ),
+                            VerticalDivider(
+                              indent: 10,
+                              endIndent: 10,
+                            ),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Text(
+                                  "${data.forecast!.forecastday![0].day!.avghumidity}",
+                                ),
+                                Text("Avg Humidity")
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 290, left: 110),
-                  child: Text(formattedDate),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 240, left: 220),
-                  child: Text(
-                    "c",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-                  ),
+                Stack(
+                  children: [
+                    Container(
+                      height: 145,
+                      color: Colors.transparent,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: (Provider.of<ThemeProvider>(context).currentTheme)
+                              ? AssetImage("assets/d1.png")
+                              : AssetImage("assets/w1.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30),
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 50,
+                              width: double.infinity,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Consumer<ThemeProvider>(
+                                      builder: (context, tp, child) {
+                                    return IconButton(
+                                      onPressed: () {
+                                        tp.setTheme();
+                                      },
+                                      icon: tp.currentTheme == false
+                                          ? Icon(Icons.dark_mode)
+                                          : Icon(Icons.light_mode_outlined),
+                                    );
+                                  }),
+                                  Text(
+                                    "${data.location!.name}",
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                        Icons.menu_outlined,
+                                        size: 25,
+                                      ))
+                                ],
+                              ),
+                            ),
+                            Container(
+                              height: 50,
+                              padding: EdgeInsets.symmetric(horizontal: 2.0),
+                              child: TextFormField(
+                                onChanged: (value) async {
+                                  String baseUrl =
+                                      "https://api.weatherapi.com/v1/forecast.json?key=e09f03988e1048d2966132426232205&q=";
+                                  String endUrl = "$value&aqi=no";
+                                  String api = baseUrl + endUrl;
+                                  http.Response res =
+                                      await http.get(Uri.parse(api));
+                                  if (res.statusCode == 200) {
+                                    sp.loc = value;
+                                    prefs.setString("City", value);
+                                  } else {
+                                    print("NO DATA FOUND");
+                                  }
+                                },
+                                onSaved: (value) async {},
+                                decoration: InputDecoration(
+                                  labelText: 'Enter City',
+                                  border: OutlineInputBorder(),
+                                  icon: Icon(Icons.location_city),
+                                ),
+                                cursorColor: Colors.white,
+                                keyboardType: TextInputType.text,
+                                textCapitalization: TextCapitalization.words,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                  ],
                 )
               ],
             );
@@ -441,7 +640,7 @@ class _Home_screenState extends State<Home_screen> {
         },
       ),
       bottomNavigationBar:
-      Consumer<ConnectivityProvider>(builder: (context, netProvider, val) {
+          Consumer<ConnectivityProvider>(builder: (context, netProvider, val) {
         netProvider.addNetListener();
         if (!netProvider.isNet) {
           return Container(
